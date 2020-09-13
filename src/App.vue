@@ -1,22 +1,58 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <Header :numCurrect="numCurrect" :numTotal="numTotal" />
+
+    <QuestionBox
+      v-if="questions.length"
+      :currentQuestion="questions[index]"
+      :next="next"
+      :increment="increment"
+    />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Header from "./components/Header.vue";
+import QuestionBox from "./components/QuestionBox.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    Header,
+    QuestionBox,
+  },
+  data() {
+    return {
+      questions: [],
+      numCurrect: 0,
+      numTotal: 0,
+      index: 0,
+    };
+  },
+  methods: {
+    next() {
+      this.index++;
+    },
+    increment(isCurrect) {
+      if (isCurrect) {
+        this.numCurrect++;
+      }
+      this.numTotal++;
+    },
+  },
+  mounted: function () {
+    fetch(
+      "https://opentdb.com/api.php?amount=10&category=15&difficulty=easy&type=multiple"
+    )
+      .then((res) => res.json())
+      .then((json) => {
+        this.questions = json.results;
+      });
+  },
+};
 </script>
 
-<style>
+<style scoped>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
